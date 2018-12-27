@@ -1,5 +1,7 @@
 package app.entity;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,15 +25,16 @@ public class CompPart implements Serializable {
 	private boolean required;
 
 	@Column
-	private int amount;
+	private int quantity;
 
+	@Autowired
 	public CompPart() {
 	}
-
-	public CompPart(String description, boolean required, int amount) {
+	@Autowired
+	public CompPart(String description, boolean required, int quantity) {
 		this.description = description;
 		this.required = required;
-		this.amount = amount;
+		this.quantity = quantity;
 	}
 
 	public int getId() {
@@ -58,21 +61,12 @@ public class CompPart implements Serializable {
 		this.required = required;
 	}
 
-	public int getAmount() {
-		return amount;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setQuantity(int amount) {
+		this.quantity = amount;
 	}
 
-	@Override
-	public String toString() {
-		return "CompPart{" +
-				"id=" + id +
-				", description='" + description + '\'' +
-				", required=" + required +
-				", amount=" + amount +
-				'}';
 	}
-}

@@ -9,102 +9,114 @@ import java.util.*;
 
 @Repository
 public class DaoImpl implements Dao {
+	String queryPartDescription = "SELECT t.* FROM parts t WHERE t.description like '%" ;
+	String queryIsRequired = "SELECT t.* FROM parts t WHERE t.required = " ;
 
 	private final AppRepository Repository;
 
-	List<CompPart> partList = new ArrayList<>();
+	//List<CompPart> partList = new ArrayList<>();
 
 	@Autowired
 	public DaoImpl(AppRepository Repository) {
 
 		this.Repository = Repository;
-
+/*
+//For tests
 		partList.add(new CompPart("Computer1", true, 95));
 		partList.add(new CompPart("Computer2", true, 96));
 		partList.add(new CompPart("Computer3", true, 97));
 		partList.add(new CompPart("Computer4", true, 98));
 		partList.add(new CompPart("Computer5", true, 99));
+		*/
 	}
 
 	@Override
-	public int createCompPart(CompPart compPart) {
-		return (int) Repository.create(compPart);
+	public List<CompPart> getCompParts() {
+		//return partList;
+		return Repository.uploadAll();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<CompPart> getCompParts(String partDescription) {
+		String query = queryPartDescription + partDescription + "%'" ;
+		List<Object[]> partObjects = Repository.uploadAll(query);
+
+		List<CompPart> parts = new ArrayList<>();
+		createListFromObjectArray(partObjects, parts);
+		return parts;
 	}
 
 	@Override
-	public CompPart updateCompPart(CompPart compPart) {
-		return Repository.update(compPart);
+	public CompPart getCompPart(int id) {
+
+		return Repository.uploadOnId(id, CompPart.class);
+	}
+
+
+	@Override
+	public void createCompPart(CompPart compPart) {
+		 Repository.create(compPart);
+	}
+
+	@Override
+	public void updateCompPart(CompPart compPart) {
+		 Repository.update(compPart);
 	}
 
 	@Override
 	public void deleteCompPart(int id) {
 		CompPart comPart = new CompPart();
 		comPart.setId(id);
-		Repository.delete(comPart);
-	}
+		Repository.delete(comPart);	}
 
-	@Override
-	public List<CompPart> getAllCompParts() {
-		//return partList;
-		return Repository.fetchAll();
-	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<CompPart> getAllCompParts(String partDescription) {
-		String query = "SELECT t.* FROM part t WHERE t.description like '%" + partDescription + "%'";
-		List<Object[]> partObjects = Repository.fetchAll(query);
-
-		List<CompPart> parts = new ArrayList<>();
-		createList(partObjects, parts);
-		return parts;
-	}
-
-	@Override
-	public CompPart getCompPart(int id) {
-		return Repository.fetchById(id, CompPart.class);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<CompPart> getRequired(String isRequired) {
-		if (isRequired.isEmpty()) return getAllCompParts();
+		if (isRequired.isEmpty()) return getCompParts();
 		else {
-			String query = "SELECT t.* FROM part t WHERE t.required = " + isRequired;
-			List<Object[]> partObjects = Repository.fetchAll(query);
+			String query = queryIsRequired + isRequired;
+			List<Object[]> partObjects = Repository.uploadAll(query);
 
 			List<CompPart> parts = new ArrayList<>();
-			createList(partObjects, parts);
+			createListFromObjectArray(partObjects, parts);
 			return parts;
 		}
 	}
 
 	@Override
-	public int computers() {
+	public int computersAssembled() {
 		List<CompPart> required = getRequired("true");
 		TreeSet<Integer> set = new TreeSet<>();
 		for (CompPart part : required) {
-			set.add(part.getAmount());
+			set.add(part.getQuantity());
 		}
 		if (set.isEmpty()) return 0;
 		return set.first();
 	}
+
+
 	private void CreateListFromList(List<CompPart> compParts, List<CompPart> parts) {
 		parts.addAll(compParts);
 	}
 
-	public static void createList(List<Object[]> partObjects, List<CompPart> parts) {
-		for (Object[] partObject : partObjects) {
-			CompPart part = new CompPart();
-			int id = (int) partObject[0];
-			String description = (String) partObject[1];
-			boolean required = (boolean) partObject[2];
-			int amount = (int) partObject[3];
-			part.setId(id);
-			part.setDescription(description);
-			part.setRequired(required);
-			part.setAmount(amount);
-			parts.add(part);
+	public static void createListFromObjectArray(List<Object[]> compPartObjects, List<CompPart> compParts) {
+
+		for (Object[] compPartObject : compPartObjects) {
+			CompPart compPart = new CompPart();
+
+			int id = (int) compPartObject[0];
+			String description = (String) compPartObject[1];
+			boolean required = (boolean) compPartObject[2];
+			int amount = (int) compPartObject[3];
+
+			compPart.setId(id);
+			compPart.setDescription(description);
+			compPart.setRequired(required);
+			compPart.setQuantity(amount);
+			compParts.add(compPart);
 		}
 	}
 }

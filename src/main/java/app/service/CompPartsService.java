@@ -5,12 +5,17 @@ import app.entity.CompPart;
 import java.util.List;
 
 public interface CompPartsService {
-	int createCompPart(CompPart compPart);
-	CompPart updateCompPart(CompPart compPart);
+	//CRUD
+	void createCompPart(CompPart compPart);
+	void updateCompPart(CompPart compPart);
 	void deleteCompPart(int id);
-	List<CompPart> getAllCompParts();
-	List<CompPart> getAllCompParts(String partDescription);
+
+	//Sort
+	List<CompPart> getCompParts();
+	List<CompPart> getCompParts(String partDescription);
 	CompPart getCompPart(int id);
 	List<CompPart> getRequired(String isRequired);
-	int computers();
+
+	//Computers from components
+	int computersAssembled();
 }

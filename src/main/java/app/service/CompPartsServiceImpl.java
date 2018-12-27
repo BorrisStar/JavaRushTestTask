@@ -1,7 +1,7 @@
 package app.service;
 
 
-import app.dao.CompPartDao;
+
 import app.dao.Dao;
 import app.entity.CompPart;
 import org.hibernate.SessionFactory;
@@ -15,59 +15,55 @@ import java.util.List;
 @Transactional
 public class CompPartsServiceImpl implements CompPartsService {
 	@Autowired
-	private  Dao DAO;
+	private  Dao dao;
 //	@Autowired
 //	private  CompPartDao compPartDao;
 @Autowired
 SessionFactory sessionFactory;
 	@Autowired
 	public CompPartsServiceImpl() {
-//		this.DAO = DAO;
-//		this.compPartDao = compPartDao;
+
 	}
 
 
 	@Override
-	public int createCompPart(CompPart compPart) {
-//		CompPart compPartsaved = compPartDao.save(compPart);
-//		return compPartsaved.getId();
-		return DAO.createCompPart(compPart);
+	public void createCompPart(CompPart compPart) {
+		 dao.createCompPart(compPart);
 	}
 
 	@Override
-	public CompPart updateCompPart(CompPart compPart) {
-		return DAO.updateCompPart(compPart);
+	public void updateCompPart(CompPart compPart) {
+		 dao.updateCompPart(compPart);
 	}
 
 	@Override
 	public void deleteCompPart(int id) {
-		DAO.deleteCompPart(id);
+		dao.deleteCompPart(id);
 	}
 
 	@Override
-	public List<CompPart> getAllCompParts() {
-//		return compPartDao.findAll();
-		return DAO.getAllCompParts();
+	public List<CompPart> getCompParts() {
+		return dao.getCompParts();
 	}
 
 	@Override
-	public List<CompPart> getAllCompParts(String partName) {
-		return DAO.getAllCompParts(partName);
+	public List<CompPart> getCompParts(String partName) {
+		return dao.getCompParts(partName);
 	}
 
 	@Override
 	public CompPart getCompPart(int id) {
-		return DAO.getCompPart(id);
+		return dao.getCompPart(id);
 	}
 
 	@Override
 	public List<CompPart> getRequired(String isRequired) {
-		return DAO.getRequired(isRequired);
+		return dao.getRequired(isRequired);
 	}
 
 	@Override
-	public int computers() {
-		return DAO.computers();
+	public int computersAssembled() {
+		return dao.computersAssembled();
 	}
 
 

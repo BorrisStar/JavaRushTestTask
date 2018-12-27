@@ -10,8 +10,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+
+
+doInTransaction(session -> {
+    LOGGER.info(
+        "Check query result is cached");
+    assertEquals(1, getLatestPosts(session).size());
+});
+ */
+
 @Repository
 public class AppRepository {
+	String queryAccess = "SELECT * FROM parts";
 
 	private final SessionFactory sessionFactory;
 
@@ -20,35 +31,35 @@ public class AppRepository {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public <T> Serializable create(final T entity) {
+	public  Serializable create(final CompPart entity) {
 		return sessionFactory.getCurrentSession().save(entity);
 	}
 
-	public <T> T update(final T entity) {
+	public CompPart update(final CompPart entity) {
 		sessionFactory.getCurrentSession().update(entity);
 		return entity;
 	}
 
-	public <T> void delete(final T entity) {
+	public  void delete(final CompPart entity) {
 		sessionFactory.getCurrentSession().delete(entity);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CompPart> fetchAll() {
-		List<Object[]> list = sessionFactory.getCurrentSession().createSQLQuery("SELECT * FROM part").list();
-		List<CompPart> parts = new ArrayList<>();
-		DaoImpl.createList(list, parts);
-		return parts;
-//		return sessionFactory.getCurrentSession().createQuery(" FROM "+entityClass.getName()).list();
+	public List<CompPart> uploadAll() {
+		List<Object[]> list = sessionFactory.getCurrentSession().createSQLQuery(queryAccess).list();
+		List<CompPart> compparts = new ArrayList<>();
+		DaoImpl.createListFromObjectArray(list, compparts);
+		return compparts;
+//		return sessionFactory.getCurrentSession().createQuery(" FROM "+entityClass.getName()).listcompparts();
 	}
 
 	@SuppressWarnings("rawtypes")
-	public <T> List fetchAll(String query) {
+	public <T> List uploadAll(String query) {
 		return sessionFactory.getCurrentSession().createSQLQuery(query).list();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T fetchById(Serializable id, Class<T> entityClass) {
+	public <T> T uploadOnId(Serializable id, Class<T> entityClass) {
 		return sessionFactory.getCurrentSession().get(entityClass, id);
 	}
 }

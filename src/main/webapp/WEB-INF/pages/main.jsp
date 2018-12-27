@@ -12,146 +12,117 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Web App Test</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <style type="text/css">
-        .myrow-container {
-            margin: 20px;
-        }
-        a.aEdit:link {
-            color: #000000;
-        }
-        a.aEdit:visited {
-            color: #565455;
-        }
-        a.aEdit:hover {
-            color: #c9c7a3;
-        }
-        a.aEdit:active {
-            color: #dedcb4;
-        }
-        a.aDelete:link {
-            color: #a83016;
-        }
-        a.aDelete:hover {
-            color: #ff0000;
-        }
-        a.aDelete:active {
-            color: #000000;
-        }
-        .panel-footer a {
-            font-size: 1.1em;
-            color: #ffffff;
-        }
-        .panel-footer a:visited {
-            color: #ffffff;
-        }
-        .panel-footer a:hover {
-            color: #ffffff;
-        }
-        .panel-footer a:active {
-            color: #ffffff;
-        }
-    </style>
+    <title>JavaRushTestTask</title>
+        <link href="resources/css/w3.css" rel="stylesheet">
+        <link href="resources/css/main.css" rel="stylesheet">
 </head>
-<body class=".container-fluid" style="background-color:whitesmoke">
-<div class="container myrow-container">
+<body class="w3-light-grey" >
+<div class="w3-container w3-blue w3-opacity w3-right-align">
 
-    <div class="panel">
-        <div class="panel-heading" style="background-color:#128181">
-            <h3 class="panel-title ">
-            </h3>
+    <div class="w3-card-4">
+        <div class="w3-container w3-blue" style="background-color:blue">
+            <h1>JavaRush TestTask</h1>
         </div>
+        <div class="body">
 
-        <div class="panel-body">
-            <c:if test="${empty list}">
-                There are no Parts
-            </c:if>
-            <c:if test="${not empty list}">
-
-                <form action="createCompPart">
-                    <div class="row">
-                        <div class="col-md-2"><input class="btn btn-primary" type='submit' value='Добавить деталь'/>
-                        </div>
-                    </div>
-                </form>
 
                 <form action="searchCompPart">
-                    <div class="row">
-                        <div class="col-md-2"><strong>Поиск по имени:</strong></div>
-                        <div class="col-md-3"><input type="text" name="searchDescription" id="searchDescription"
-                                                     placeholder="Поиск.."></div>
-                        <div class="col-md-2" align="left"><input class="btn btn-primary" type='submit' value='Найти'/>
-                        </div>
+                    <div class="search">
+                        <div class="find"><strong>Найти по наименованию:</strong></div>
+                        <div class="find1"><input type="text" name="searchDescription" id="searchDescription" ></div>
+                        <div class="button" ><input class="w3-button" type='submit' value='Найти'/>
                     </div>
+
+                </div>
                 </form>
 
                 <form action="searchRequired">
-                    <div class="row" align="left">
-                        <div class="col-md-2"><strong>Отфильтровать:</strong></div>
+                    <div class="search" align="left">
+                        <div class="requred1"><strong>Необходимость:</strong></div>
 
-                        <div class="col-md-3">
-                            <input type="radio" name="requirement" value=""/> Все
-                            <input type="radio" name="requirement" value="true"/> Нужные
-                            <input type="radio" name="requirement" value="false"/> Ненужные
+                        <div class="requred2">
+                            <input type="radio" name="requirement" value="true"/> Да
+                            <input type="radio" name="requirement" value="false"/> Нет
+                            <input type="radio" checked name="requirement" value=""/> Все
+                            <div class="button" ><input class="w3-button" type='submit' value='Выбор'/>
                         </div>
-                        <div class="col-md-2"><input class="btn btn-primary" type='submit' value='Выбор'/></div>
+
+                    </div>
+
                     </div>
                 </form>
 
-                <table class="table table-hover table-bordered">
-                    <thead style="background-color: #17a8a5; color: white;">
-                    <tr>
-                        <th>Наименование</th>
-                        <th>Необходимость</th>
-                        <th>На складе</th>
-                        <th>Редактировать</th>
-                        <th>Удалить</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${list}" var="parts">
-                        <tr>
-                            <th><c:out value='${parts.description}'/></th>
-                            <th><c:out value='${parts.required == true ? "да" : "нет"}'/></th>
-                            <th><c:out value='${parts.amount}'/></th>
-                            <th><a class="aEdit" href="editCompPart?id=<c:out value='${parts.id}'/>">Ред.</a></th>
-                            <th><a class="aDelete" href="deleteCompPart?id=<c:out value='${parts.id}'/>">Х</a></th>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </c:if>
-            <table class="table table-hover table-bordered">
-                <tbody>
+
+            <table class="table">
+                <thead style="background-color: lightgray; color: white;">
                 <tr>
-                    <th>Можно собрать</th>
-                    <th><c:out value='${computers}'/></th>
-                    <th>компьютер(ов)</th>
+                    <th>Удалить</th>
+                    <th>Изменить</th>
+                    <th>Наименование</th>
+                    <th>Необходимость</th>
+                    <th>Склад</th>
+
                 </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${listcompparts}" var="parts">
+                    <tr>
+                        <th><a class="Delete" style="color:red;" href="deleteCompPart?id=<c:out value='${parts.id}'/>">Delete</a></th>
+                        <th><a class="Edit" href="editCompPart?id=<c:out value='${parts.id}'/>">Update</a></th>
+
+                        <th><c:out value='${parts.description}'/></th>
+                        <th><c:out value='${parts.required == true ? "да" : "нет"}'/></th>
+                        <th><c:out value='${parts.quantity}'/></th>
+
+                    </tr>
+                </c:forEach>
                 </tbody>
             </table>
+        <div>
+                <table class="table" align="left">
+                    <thead style="background-color: blue; color: white;">
+                    <tbody>
+                    <tr>
+                        <th>Можно собрать</th>
+                        <th><font  color="#00008b" face="Arial"><c:out  value='${computers}'/></font></th>
+                        <th>компьютер(ов)</th>
+                    </tr>
+                    </tbody>
+                </table>
+        </div>
+                <form action="createCompPart">
+                    <div class="create" align="right">
+                        <div class="button"><input class="w3-button" type='submit' value='Добавить компонент'/>
+                        </div>
+                    </div>
+                </form>
+
+
+
         </div>
 
-        <div align="center" class="panel-footer" style="background-color:#128181" id="pagination">
+
+
+
+
+        <div align="center" class="panel-footer" style="background-color:lightgray" id="paging">
             <c:url value="/" var="prev">
                 <c:param name="page" value="${page-1}"/>
             </c:url>
             <c:if test="${page > 1}">
-                <a href="<c:out value="${prev}" />" class="pn prev">Пред.</a>
+                <a href="<c:out value="${prev}" />" class="pn prev"><< </a>
             </c:if>
 
-            <c:forEach begin="1" end="${maxPages}" step="1" varStatus="i">
+            <c:forEach begin="1" end="${maxPages}" step="1" varStatus="j">
                 <c:choose>
-                    <c:when test="${page == i.index}">
-                        <span>${i.index}</span>
+                    <c:when test="${page == j.index}">
+                        <span>${j.index}</span>
                     </c:when>
                     <c:otherwise>
                         <c:url value="/" var="url">
-                            <c:param name="page" value="${i.index}"/>
+                            <c:param name="page" value="${j.index}"/>
                         </c:url>
-                        <a href='<c:out value="${url}" />'>${i.index}</a>
+                        <a href='<c:out value="${url}" />'>${j.index}</a>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
@@ -159,13 +130,10 @@
                 <c:param name="page" value="${page + 1}"/>
             </c:url>
             <c:if test="${page + 1 <= maxPages}">
-                <a href='<c:out value="${next}" />' class="pn next">След.</a>
+                <a href='<c:out value="${next}" />' class="pn next"> >></a>
             </c:if>
         </div>
-
+     </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-</div>
 </body>
 </html>

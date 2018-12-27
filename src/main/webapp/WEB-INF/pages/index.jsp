@@ -11,6 +11,6 @@
     <title>Borris</title>
 </head>
 <body>
-<h2> Create CompPart </h2>
+<h2> Test </h2>
 </body>
 </html>

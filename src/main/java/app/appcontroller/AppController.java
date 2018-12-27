@@ -2,37 +2,23 @@ package app.appcontroller;
 
 import app.entity.CompPart;
 import app.service.CompPartsService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.support.PagedListHolder;
 
-import org.jboss.logging.Logger;
+
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-/*
-@RequestMapping(value = "/search", method = RequestMethod.POST)
-public String search(@RequestParam Integer idProvider,
-        @RequestParam String department,
-        @RequestParam String carNumber,
-        @RequestParam ("arrivalDate") @DateTimeFormat(iso = ISO.DATE) LocalDate startDate,
-        @RequestParam("arrivalDate") @DateTimeFormat(iso = ISO.DATE) LocalDate endDate,
-        @ModelAttribute("idAttribute") Supply supply, Model model) throws DaoException {
 
-    List<Supply> supplyList = supplyDao.searchByCriteria(idProvider, department, carNumber, startDate, endDate);
-    model.addAttribute("supplyList", supplyList);
-
-    return "searchList";
- */
 
 @Controller
 public class AppController {
-	private static final Logger logger = Logger.getLogger(AppController.class);
+	private static final Logger log = Logger.getLogger(AppController.class);
 	private final CompPartsService compPartsService;
 
 	@Autowired
@@ -41,93 +27,106 @@ public class AppController {
 
 	}
 
-	@RequestMapping("index")
-	public ModelAndView createPart() {
-		logger.info("Display index.jsp ");
-		return new ModelAndView("index");
+	@RequestMapping("/")
+	public ModelAndView listOfParts(@RequestParam(required = false) Integer page) {
+		ModelAndView modelAndView = new ModelAndView("main");
+		List<CompPart> compParts = compPartsService.getCompParts();
+		log.info("Show all components");
+		return paging(modelAndView, compParts,  page);
 	}
 
 	@RequestMapping("createCompPart")
-	public ModelAndView createPart(@ModelAttribute CompPart part) {
-		logger.info("Creating CompPart. Data: " + part);
-		return new ModelAndView("newcomppart");
-	}
+	public ModelAndView createCompPart(){
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("NewCompPartObject", new CompPart("",true,0));
+		log.info("Creating NewCompPart");
+		modelAndView.setViewName("newcomppart");
+		return modelAndView;}
+
+
+
 
 	@RequestMapping("editCompPart")
-	public ModelAndView editPart(@RequestParam int id, @ModelAttribute CompPart part) {
-		logger.info("Updating the CompPart for the Id "+id);
-		part = compPartsService.getCompPart(id);
-		return new ModelAndView("newcomppart", "partObject", part);
+	public ModelAndView editCompPart(@RequestParam int id, @ModelAttribute CompPart compPart) {
+		compPart = compPartsService.getCompPart(id);
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("NewCompPartObject", compPart);
+		log.info("CompPart Update on Id "+id);
+		modelAndView.setViewName("newcomppart");
+		return modelAndView;
 	}
 
 	@RequestMapping("saveCompPart")
-	public ModelAndView savePart(@ModelAttribute CompPart part) {
-		logger.info("Saving the CompPart. Data : "+part);
-		if(part.getId() == 0){ // if part id is 0 then creating part other updating part
-			compPartsService.createCompPart(part);
+	public ModelAndView saveCompPart(@ModelAttribute CompPart compPart) {
+		if(compPart.getId() == 0){
+			compPartsService.createCompPart(compPart);
 		} else {
-			compPartsService.updateCompPart(part);
+			compPartsService.updateCompPart(compPart);
 		}
+		log.info("CompPart Save: "+compPart);
 		return new ModelAndView("redirect:/");
 	}
 
 	@RequestMapping("deleteCompPart")
-	public ModelAndView deletePart(@RequestParam int id)
+	public ModelAndView deleteCompPart(@RequestParam int id)
 	{
-		logger.info("Deleting the CompPart. Id : " + id);
 		compPartsService.deleteCompPart(id);
+		log.info("CompPart Delete: " + id);
 		return new ModelAndView("redirect:/");
 	}
 
+
+
 	@RequestMapping("getAllCompParts")
 	public ModelAndView getAllParts(){
-		logger.info("Getting all CompParts.");
-		List<CompPart> partList = compPartsService.getAllCompParts();
-		ModelAndView modelAndView = new ModelAndView("main", "list", partList);
-		modelAndView.addObject("computers", compPartsService.computers());
+		List<CompPart> partList = compPartsService.getCompParts();
+		ModelAndView modelAndView = new ModelAndView("main", "listcompparts", partList);
+		modelAndView.addObject("computers", compPartsService.computersAssembled());
+		log.info("CompParts All Upload.");
 		return modelAndView;
 	}
 
 	@RequestMapping("searchCompPart")
 	public ModelAndView searchPart(@RequestParam("searchDescription") String searchDescription){
-		logger.info("Searching the CompPart. CompPart Descriptions: "+searchDescription);
-		List<CompPart> partsList = compPartsService.getAllCompParts(searchDescription);
-		ModelAndView modelAndView = new ModelAndView("main", "list", partsList);
-		modelAndView.addObject("computers", compPartsService.computers());
+		List<CompPart> partsList = compPartsService.getCompParts(searchDescription);
+		ModelAndView modelAndView = new ModelAndView("main", "listcompparts", partsList);
+		modelAndView.addObject("computers", compPartsService.computersAssembled());
+		log.info("CompParts search on Descriptions: "+searchDescription);
 		return modelAndView;
 	}
 
 	@RequestMapping("searchRequired")
 	public ModelAndView searchRequired(@RequestParam("requirement") String requirement) {
-		logger.info("Testing boolean search with param: " +requirement);
 		List<CompPart> requiredList = compPartsService.getRequired(requirement);
-		ModelAndView modelAndView = new ModelAndView("main", "list", requiredList);
-		modelAndView.addObject("computers", compPartsService.computers());
+		ModelAndView modelAndView = new ModelAndView("main", "listcompparts", requiredList);
+		modelAndView.addObject("computers", compPartsService.computersAssembled());
+		log.info("Search with requirement param: " +requirement);
 		return modelAndView;
 	}
 
-	@RequestMapping("/")
-	public ModelAndView listOfParts(@RequestParam(required = false) Integer page) {
-		logger.info("Show all components");
+	private ModelAndView paging (ModelAndView modelAndView,List<CompPart> compParts, Integer page ){
 
-		ModelAndView modelAndView = new ModelAndView("main");
-
-		List<CompPart> parts = compPartsService.getAllCompParts();
-		PagedListHolder<CompPart> pagedListHolder = new PagedListHolder<>(parts);
+		PagedListHolder<CompPart> pagedListHolder = new PagedListHolder<>(compParts);
 		pagedListHolder.setPageSize(10);
+
 		modelAndView.addObject("maxPages", pagedListHolder.getPageCount());
 
 		if(page == null || page < 1 || page > pagedListHolder.getPageCount()){
 			page=1;
 			pagedListHolder.setPage(0);
-			modelAndView.addObject("list", pagedListHolder.getPageList());
+			modelAndView.addObject("listcompparts", pagedListHolder.getPageList());
 		}
-		else if(page <= pagedListHolder.getPageCount()) {
+
+		if(page <= pagedListHolder.getPageCount()) {
 			pagedListHolder.setPage(page-1);
-			modelAndView.addObject("list", pagedListHolder.getPageList());
+			modelAndView.addObject("listcompparts", pagedListHolder.getPageList());
 		}
+
 		modelAndView.addObject("page", page);
-		modelAndView.addObject("computers", compPartsService.computers());
+		modelAndView.addObject("computers", compPartsService.computersAssembled());
+
 		return modelAndView;
 	}
+
+
 }
